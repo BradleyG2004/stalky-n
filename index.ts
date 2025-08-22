@@ -26,6 +26,12 @@ app.post('/send-to-zapier', async (req, res) => {
     const zapierWebhook = process.env.ZAP_URL;
     const zapierWebhook2 = process.env.ZAP_URL2;
     
+    // Debug: afficher les variables d'environnement
+    console.log('Variables d\'environnement:', {
+      ZAP_URL: zapierWebhook,
+      ZAP_URL2: zapierWebhook2
+    });
+    
     if (!zapierWebhook) {
       console.error('Variable d\'environnement ZAP_URL manquante');
       return res.status(500).json({ 
@@ -56,13 +62,13 @@ app.post('/send-to-zapier', async (req, res) => {
         try {
           console.log('Envoi vers deuxième Zapier webhook:', zapierWebhook2);
           
-          const response2 = await fetch(zapierWebhook2, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify({ instagram, about }) // Pas de données à transmettre
-          });
+                     const response2 = await fetch(zapierWebhook2, {
+             method: 'POST',
+             headers: { 
+               'Content-Type': 'application/json' 
+             },
+             body: JSON.stringify({}) // Pas de données à transmettre
+           });
 
           const responseText2 = await response2.text();
           console.log('Réponse du deuxième Zapier:', response2.status, responseText2);
@@ -102,9 +108,20 @@ app.post('/send-to-zapier', async (req, res) => {
   }
 });
 
+// Route de test
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Backend Stalky Node.js opérationnel',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Démarrage du serveur
 app.listen(PORT, () => {
-  console.log(`🚀 Backend Stalky démarré sur le port ${PORT}`)
+  console.log(`🚀 Backend Stalky démarré sur le port ${PORT}`);
+  console.log(`📡 Endpoint Zapier: http://localhost:${PORT}/send-to-zapier`);
+  console.log(`🏥 Health check: http://localhost:${PORT}/health`);
 });
 
 export default app;
