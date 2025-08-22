@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000','https://stalky-theta.vercel.app'], // Autoriser votre frontend Vue
+  origin: ['http://localhost:5173','https://stalky-theta.vercel.app'], // Autoriser votre frontend Vue
   credentials: true
 }));
 app.use(express.json());
@@ -24,6 +24,7 @@ app.post('/send-to-zapier', async (req, res) => {
 
   try {
     const zapierWebhook = process.env.ZAP_URL;
+    const zapierWebhook2 = process.env.ZAP_URL2;
     
     if (!zapierWebhook) {
       console.error('Variable d\'environnement ZAP_URL manquante');
@@ -33,8 +34,9 @@ app.post('/send-to-zapier', async (req, res) => {
       });
     }
 
-    console.log('Envoi vers Zapier webhook:', zapierWebhook);
+    console.log('Envoi vers premier Zapier webhook:', zapierWebhook);
 
+    // Premier appel vers Zapier
     const response = await fetch(zapierWebhook, {
       method: 'POST',
       headers: { 
@@ -44,13 +46,44 @@ app.post('/send-to-zapier', async (req, res) => {
     });
 
     const responseText = await response.text();
-    console.log('Réponse de Zapier:', response.status, responseText);
+    console.log('Réponse du premier Zapier:', response.status, responseText);
 
     if (response.ok) {
+      console.log('Premier webhook Zapier réussi, déclenchement du deuxième...');
+      
+      // Si le premier webhook réussit, appeler le deuxième
+      if (zapierWebhook2) {
+        try {
+          console.log('Envoi vers deuxième Zapier webhook:', zapierWebhook2);
+          
+          const response2 = await fetch(zapierWebhook2, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({}) // Pas de données à transmettre
+          });
+
+          const responseText2 = await response2.text();
+          console.log('Réponse du deuxième Zapier:', response2.status, responseText2);
+
+          if (response2.ok) {
+            console.log('Deuxième webhook Zapier réussi');
+          } else {
+            console.warn('Deuxième webhook Zapier échoué:', response2.status);
+          }
+        } catch (error2) {
+          console.warn('Erreur lors de l\'appel du deuxième webhook:', error2);
+        }
+      } else {
+        console.log('ZAP_URL2 non configuré, deuxième webhook ignoré');
+      }
+
       res.status(200).json({ 
         success: true, 
         message: 'Données envoyées avec succès vers Zapier',
-        zapierResponse: responseText
+        zapierResponse: responseText,
+        secondWebhookTriggered: !!zapierWebhook2
       });
     } else {
       res.status(response.status).json({ 
