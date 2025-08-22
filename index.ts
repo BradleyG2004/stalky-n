@@ -102,15 +102,6 @@ app.post('/send-to-zapier', async (req, res) => {
   }
 });
 
-// Route de test
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'Backend Stalky Node.js opérationnel',
-    timestamp: new Date().toISOString()
-  });
-});
-
 // Démarrage du serveur
 app.listen(PORT, () => {
   console.log(`🚀 Backend Stalky démarré sur le port ${PORT}`)
