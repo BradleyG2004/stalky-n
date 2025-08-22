@@ -61,7 +61,7 @@ app.post('/send-to-zapier', async (req, res) => {
             headers: { 
               'Content-Type': 'application/json' 
             },
-            body: JSON.stringify({}) // Pas de données à transmettre
+            body: JSON.stringify({ instagram, about }) // Pas de données à transmettre
           });
 
           const responseText2 = await response2.text();
