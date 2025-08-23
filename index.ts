@@ -59,36 +59,35 @@ app.post('/send-to-zapier', async (req, res) => {
             
             // Appeler le deuxième webhook de manière asynchrone
             let secondWebhookResult = null;
-            if (zapierWebhook2) {
-                try {
-                    console.log('Envoi vers deuxième Zapier webhook:', zapierWebhook2);
+            // if (zapierWebhook2) {
+            //     try {
+            //         console.log('Envoi vers deuxième Zapier webhook:', zapierWebhook2);
 
-                    const response2 = await fetch(zapierWebhook2, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({}) // Pas de données à transmettre
-                    });
+            //         const response2 = await fetch(zapierWebhook2, {
+            //             method: 'POST',
+            //             headers: {
+            //                 'Content-Type': 'application/json'
+            //             },
+            //             body: JSON.stringify({}) // Pas de données à transmettre
+            //         });
 
-                    const responseText2 = await response2.text();
-                    console.log('Réponse du deuxième Zapier:', response2.status, responseText2);
+            //         const responseText2 = await response2.text();
+            //         console.log('Réponse du deuxième Zapier:', response2.status, responseText2);
 
-                    if (response2.ok) {
-                        console.log('Deuxième webhook Zapier réussi');
-                        secondWebhookResult = { success: true, response: responseText2 };
-                    } else {
-                        console.warn('Deuxième webhook Zapier échoué:', response2.status);
-                        secondWebhookResult = { success: false, status: response2.status, response: responseText2 };
-                    }
-                } catch (error2) {
-                    console.warn('Erreur lors de l\'appel du deuxième webhook:', error2);
-                    secondWebhookResult = { success: false, error: error2 instanceof Error ? error2.message : 'Erreur inconnue' };
-                }
-            } else {
-                console.log('ZAP_URL2 non configuré, deuxième webhook ignoré');
-            }
-
+            //         if (response2.ok) {
+            //             console.log('Deuxième webhook Zapier réussi');
+            //             secondWebhookResult = { success: true, response: responseText2 };
+            //         } else {
+            //             console.warn('Deuxième webhook Zapier échoué:', response2.status);
+            //             secondWebhookResult = { success: false, status: response2.status, response: responseText2 };
+            //         }
+            //     } catch (error2) {
+            //         console.warn('Erreur lors de l\'appel du deuxième webhook:', error2);
+            //         secondWebhookResult = { success: false, error: error2 instanceof Error ? error2.message : 'Erreur inconnue' };
+            //     }
+            // } else {
+            //     console.log('ZAP_URL2 non configuré, deuxième webhook ignoré');
+            // }
             // Envoyer la réponse après que les deux webhooks soient terminés
             res.status(200).json({
                 success: true,
